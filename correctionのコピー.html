@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div><input id="input_message" ></div>
+    <div><input id="mending_message" ></div>
+    <div><input  value="button" onclick="diplay_message()" id="button" type="button"><input  value="compare" onclick="compare_message()" id="compare" type="button"></div>
+    <p id="output_message"></p>
+    <p></p>
+</body>
+<script>
+    const input_message = document.getElementById("input_message");
+    const button = document.getElementById("button");
+    const mending_message = document.getElementById("mending_message");
+    const output_message = document.getElementById("output_message");
+    const state_of_char = [];
+    const unmb_of_char = [0]
+    const erased_number = [0]
+    const a = [null];
+    
+
+    function diplay_message(){
+        //console.log("button");
+        mending_message.value = input_message.value;
+        output_message.innerHTML = input_message.value;
+        //console.log("substring"+input_message.value.substring(4,4));
+        iniput_to_state_of_char();
+    }
+
+    function iniput_to_state_of_char(){
+        for (let i=0; i<input_message.value.length; i++){
+            let NewArray = [];
+            NewArray.push(input_message.value.charAt(i));
+            NewArray.push(i);
+            //state_of_char.push(input_message.value.substr( i, 1 ))
+            state_of_char.push(NewArray);
+            console.log(NewArray);
+        }
+        console.log(state_of_char);
+    }
+
+    function count_unmb_of_char(){
+        erased_number.splice(0,1,0)
+        for (let i=0; i< input_message.value.length; i++){
+            if (String(state_of_char[i][1])=="false"){
+                erased_number[0]+=1
+            }
+        }
+        console.log(erased_number[0])
+    }
+    
+    function compare_message(){
+        for (let i = 0; i < input_message.value.length; i++) {
+        if (state_of_char[i][0] == String(mending_message.value.charAt(i)) || String(state_of_char[i][1])=="false"){
+		}else if(state_of_char[i] == null){
+        }else{
+            const diff_of_length = input_message.value.length - mending_message.value.length;
+            output_message.innerHTML = null;
+            //output_message.innerHTML = input_message.value.substring( 0, i )
+            for (let j=input_message.value.length-1; 0<=j ; j-=1){
+                if (state_of_char[j][0] == mending_message.value.charAt(j - diff_of_length ) || String(state_of_char[j][1])=="false"){
+                }else{
+                    //output_message.innerHTML += String(input_message.value.substr( i,j - i+1 )).strike()+input_message.value.substr( j+1,input_message.value.length - j+1);
+                    for(let k=i; k<=j; k++){
+                        console.log("i"+i+"j"+j+"k"+k);
+                        state_of_char[k].splice(1,1,false);
+                    }
+                    count_unmb_of_char()
+                    for(let l=0; l<state_of_char.length; l++){
+                        if (String(state_of_char[l][1])!="false"){
+                            output_message.innerHTML+=state_of_char[l][0];
+                        }else{
+                            output_message.innerHTML+=state_of_char[l][0].strike()
+                        }
+                    }
+                    console.log(state_of_char);
+                    break;
+                }
+		}
+            break;
+            }
+        }
+    }
+    
+
+    document.addEventListener('keyup', (event) => {
+         console.log(event.key);
+         if (event.key == "Backspace"){
+            console.log(event.key);
+            compare_message();
+            if (a[0] == null){
+                //console.log("a")
+            }
+            if(state_of_char[4] == null){
+                console.log("state_of_char[4]=="+state_of_char[4]);
+                console.log(state_of_char);
+            }
+            
+            console.log(state_of_char.indexOf(null));
+         }
+        });
+</script>
+</html>

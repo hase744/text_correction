@@ -61,6 +61,28 @@
         console.log(state_of_char);
     }
 
+    function adjust_state_of_char(diff_of_length){
+        console.log("mending_message.value.length"+mending_message.value.length)
+        var added_area = -1
+        console.log(diff_of_length)
+        for(let i=0; i<state_of_char.length; i++){
+                    //falseは無視
+                    if(String(state_of_char[i][1]) == "false"){
+                        console.log("false")
+                        added_area++
+                    //state_of_charの増やす箇所の特定
+                    }else if (state_of_char[i][0] == mending_message.value.charAt(state_of_char[i][1])){
+                        added_area = i
+                        console.log(state_of_char[i][0]+"is normal")
+                    //state_of_charの増やすところを増やす
+                    }else if(added_area<i ){
+                            state_of_char[i].splice(1,1,state_of_char[i][1]+diff_of_length)
+                            console.log("added"+diff_of_length+"to"+state_of_char[i][0])
+                    }
+                }
+        console.log(state_of_char)
+    }
+
     function Backspace(){
                 
                 var start = mending_message.selectionStart;
@@ -68,22 +90,28 @@
                 var diff_of_length = log_of_mending_message[1].length-log_of_mending_message[0].length;
                 var reduced_number = log_of_mending_message[1].substr( start, diff_of_length )
                 var reduced_area = -1
+                var numb_to_be_erased = diff_of_length
+                var reduced_area_is_found = false
                 console.log(state_of_char);
+                console.log("(start,end)="+"("+start+","+end+")")
+                for(let i=0; i<state_of_char.length; i++){}
                 for(let i=0; i<state_of_char.length; i++){
                     //falseは無視
-                    console.log("state_of_char.length"+state_of_char.length)
                     if(String(state_of_char[i][1]) == "false"){
                         console.log("false")
+                        reduced_area++
                     //state_of_charの消す箇所の特定
                     }else if (state_of_char[i][0] == mending_message.value.charAt(state_of_char[i][1])){
                         reduced_area = i
-                        console.log(state_of_char)
                         console.log(state_of_char[i][0]+"is normal")
-                        //console.log(reduced_area)
                     //state_of_charの消されたところのfalse化
                     }else if(reduced_area<i && i<=reduced_area+diff_of_length){
-                        state_of_char[i].splice(1,1,false)
-                        console.log("made"+state_of_char[i][0]+"false")
+                        if(numb_to_be_erased != 0){
+                            state_of_char[i].splice(1,1,false)
+                            console.log("made"+state_of_char[i][0]+"false")
+                            numb_to_be_erased-=1
+                            console.log("numb_to_be_erased : "+numb_to_be_erased)
+                        }
                     //後ろを消された分だけずらす
                     }else{
                         state_of_char[i].splice(1,1,state_of_char[i][1]-diff_of_length)
@@ -105,21 +133,18 @@
         console.log(added_char);
     }
 
-    /*
-    
-    */
-
     document.addEventListener('keyup', (event) => {
          var start = mending_message.selectionStart;
          var end = mending_message.selectionStart;
          log_of_mending_message.unshift(mending_message.value)
          if (2<=log_of_mending_message.length){
-            let diff_of_length = log_of_mending_message[1].length-log_of_mending_message[0].length;
+            let diff_of_length = log_of_mending_message[0].length-log_of_mending_message[1].length;
             if (event.key == "Backspace"){
                 Backspace()
          }
-            if (diff_of_length<0){
+            if (0<diff_of_length){
                 add_new_char();
+                adjust_state_of_char(diff_of_length)
             }
          }
         });
