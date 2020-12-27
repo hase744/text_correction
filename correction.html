@@ -17,13 +17,9 @@
     const button = document.getElementById("button");
     const mending_message = document.getElementById("mending_message");
     const mended_message = document.getElementById("mended_message");
-    //const start = button_mending_message.selectionStart;
-    //const end = button_mending_message.selectionStart;
-    const cursor_change_key = ["←","↑","→","↓","Backspace"]
+    const output_message = document.getElementById("output_message");
     const log_of_mending_message = [];
     const state_of_char = [];
-    const added_char = [];
-    
 
     function diplay_message(){
         mending_message.value = input_message.value;
@@ -35,6 +31,23 @@
         console.log(log_of_mending_message);
         console.log(mending_message.selectionStart);
         console.log(input_message.selectionStart);
+    }
+
+    function display_output_message(){
+        output_message.innerHTML = null
+        for(i=0; i<mending_message.value.length; i++){
+            let searching_array = []
+            searching_array.push(String(mending_message.value.charAt(i)))
+            searching_array.push(i)
+            for(let j=0 ;j<state_of_char.length ;j++){
+                if(String(searching_array) == String(state_of_char[j])){
+                    output_message.innerHTML += mending_message.value.charAt(i)
+                    break;
+                }else if(j == state_of_char.length-1){
+                    output_message.innerHTML += "<span style='color:red;'>"+String(mending_message.value.charAt(i))+"</span>"
+                }
+            }
+        }
     }
 
     function display_mended_message(){
@@ -54,106 +67,100 @@
             let NewArray = [];
             NewArray.push(input_message.value.charAt(i));
             NewArray.push(i);
-            //state_of_char.push(input_message.value.substr( i, 1 ))
             state_of_char.push(NewArray);
-            //console.log(NewArray);
         }
         console.log(state_of_char);
     }
 
-    function adjust_state_of_char(diff_of_length){
-        console.log("mending_message.value.length"+mending_message.value.length)
-        var added_area = -1
-        console.log(diff_of_length)
-        for(let i=0; i<state_of_char.length; i++){
-                    //falseは無視
-                    if(String(state_of_char[i][1]) == "false"){
-                        console.log("false")
-                        added_area++
-                    //state_of_charの増やす箇所の特定
-                    }else if (state_of_char[i][0] == mending_message.value.charAt(state_of_char[i][1])){
-                        added_area = i
-                        console.log(state_of_char[i][0]+"is normal")
-                    //state_of_charの増やすところを増やす
-                    }else if(added_area<i ){
-                            state_of_char[i].splice(1,1,state_of_char[i][1]+diff_of_length)
-                            console.log("added"+diff_of_length+"to"+state_of_char[i][0])
+    function adjust_state_of_char(diff_of_length,start){
+        for(let i=start; i<log_of_mending_message[0].length; i++){
+            let searching_array = []
+            searching_array.push(String(mending_message.value.charAt(i)))
+            searching_array.push(i-diff_of_length)
+            for(let j=0 ;j<state_of_char.length ;j++){
+                if(String(searching_array) == String(state_of_char[j])){
+                    state_of_char[j].splice(1,1,state_of_char[j][1]+diff_of_length)
+                    break;
+                }
+            }
+        }
+        console.log(state_of_char)
+        display_output_message()
+    }
+
+    function Backspace(diff_of_length,start){
+        for (let i=start; i<log_of_mending_message[1].length; i++){
+                let searching_array = []
+                searching_array.push(String(log_of_mending_message[1].charAt(i)))
+                searching_array.push(i)
+                console.log(searching_array)
+                for(let j=0 ;j<state_of_char.length ;j++){
+                    if(String(searching_array) == String(state_of_char[j])){
+                            if(i<start-diff_of_length){
+                            state_of_char[j].splice(1,1,false)
+                            //console.log(diff_of_length)
+                        }else{
+                            state_of_char[j].splice(1,1,state_of_char[j][1]+diff_of_length)
+                            console.log(diff_of_length)
+                            break;
+                            }
+                        }
                     }
                 }
         console.log(state_of_char)
+        display_mended_message();
+        display_output_message();
     }
 
-    function Backspace(){
-                
-                var start = mending_message.selectionStart;
-                var end = mending_message.selectionStart;
-                var diff_of_length = log_of_mending_message[1].length-log_of_mending_message[0].length;
-                var reduced_number = log_of_mending_message[1].substr( start, diff_of_length )
-                var reduced_area = -1
-                var numb_to_be_erased = diff_of_length
-                var reduced_area_is_found = false
-                console.log(state_of_char);
-                console.log("(start,end)="+"("+start+","+end+")")
-                for(let i=0; i<state_of_char.length; i++){}
-                for(let i=0; i<state_of_char.length; i++){
-                    //falseは無視
-                    if(String(state_of_char[i][1]) == "false"){
-                        console.log("false")
-                        reduced_area++
-                    //state_of_charの消す箇所の特定
-                    }else if (state_of_char[i][0] == mending_message.value.charAt(state_of_char[i][1])){
-                        reduced_area = i
-                        console.log(state_of_char[i][0]+"is normal")
-                    //state_of_charの消されたところのfalse化
-                    }else if(reduced_area<i && i<=reduced_area+diff_of_length){
-                        if(numb_to_be_erased != 0){
-                            state_of_char[i].splice(1,1,false)
-                            console.log("made"+state_of_char[i][0]+"false")
-                            numb_to_be_erased-=1
-                            console.log("numb_to_be_erased : "+numb_to_be_erased)
-                        }
-                    //後ろを消された分だけずらす
-                    }else{
-                        state_of_char[i].splice(1,1,state_of_char[i][1]-diff_of_length)
-                        console.log("make"+state_of_char[i]+"decrease")
-                    }
-                }
-                display_mended_message();
-    }
+    /*
+    function compare_log(){
+        var fromt_same_num = 0 
+        var rear_same_num = 0
+        //var how_same_the_char =0
+        for(let i=0; i<log_of_mending_message[1].length; i++){
+            if(log_of_mending_message[0].charAt(i) == log_of_mending_message[1].charAt(i)){
+                fromt_same_num = i
+            }
+        }
 
-    function add_new_char(){
-        var start = mending_message.selectionStart;
-        var end = mending_message.selectionStart;
-        var diff_of_length = log_of_mending_message[0].length-log_of_mending_message[1].length;
-        var new_char = log_of_mending_message[0].substr(start-diff_of_length,diff_of_length );
-        let NewArray = []
-        NewArray.unshift(new_char)
-        NewArray.unshift(start-diff_of_length)
-        added_char.unshift(NewArray);
-        console.log(added_char);
+        for(let i=0; i<log_of_mending_message[1].length; i++){
+            if(log_of_mending_message[0].charAt(log_of_mending_message[0].length - i -1) == log_of_mending_message[1].charAt(log_of_mending_message[1].length - i -1)){
+                rear_same_num = i
+            }
+        }
+
+        var how_same_the_char = fromt_same_num + rear_same_num + 2
+        console.log(how_same_the_char)
+        console.log("fromt_same_num:rear_same_num = " + fromt_same_num + ":" + rear_same_num)
     }
+    */
+
 
     document.addEventListener('keyup', (event) => {
          var start = mending_message.selectionStart;
-         var end = mending_message.selectionStart;
+         var ver_to_refer = 0
          log_of_mending_message.unshift(mending_message.value)
+         
+
          if (2<=log_of_mending_message.length){
-            let diff_of_length = log_of_mending_message[0].length-log_of_mending_message[1].length;
-            if (event.key == "Backspace"){
-                Backspace()
-         }
+            var diff_of_length = log_of_mending_message[0].length-log_of_mending_message[1].length;
+            //console.log(Math.max(log_of_mending_message[1].length, log_of_mending_message[0].length))
+            compare_log()
             if (0<diff_of_length){
-                add_new_char();
-                adjust_state_of_char(diff_of_length)
+                ver_to_refer = 1
+                adjust_state_of_char(diff_of_length,start)
+                display_output_message()
+            }else{
+                if (event.key == "Backspace"){
+                    ver_to_refer = 0
+                    Backspace(diff_of_length,start)
+                }else{}
             }
          }
         });
 
     document.addEventListener('click', (event) => {
-         var start = mending_message.selectionStart;
-         var end = mending_message.selectionStart;
          console.log(event.key);
-         
         });
 </script>
 </html>
